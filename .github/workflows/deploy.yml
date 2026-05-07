@@ -111,3 +111,55 @@ jobs:
               echo "❌ Oracle backend health check failed (HTTP $STATUS)"
               exit 1
             fi
+
+  # ─────────────────────────────────────────────────────────
+  # JOB 4 — Discord notification (N)
+  # ─────────────────────────────────────────────────────────
+  notify-discord:
+    name: 🔔 Notify Discord
+    runs-on: ubuntu-latest
+    needs: [deploy-backend-aws, deploy-backend-oracle]
+    if: always()   # run even if deploy jobs fail
+
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          AWS_RESULT: ${{ needs.deploy-backend-aws.result }}
+          ORACLE_RESULT: ${{ needs.deploy-backend-oracle.result }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
+          ACTOR: ${{ github.actor }}
+        run: |
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "⚠️  DISCORD_WEBHOOK_URL secret not set — skipping notification"
+            exit 0
+          fi
+
+          if [ "$AWS_RESULT" = "success" ] && [ "$ORACLE_RESULT" = "success" ]; then
+            COLOR=3066993
+            TITLE="✅ CloudPulse Deploy Succeeded"
+            STATUS_AWS="✅ Success"
+            STATUS_ORACLE="✅ Success"
+          else
+            COLOR=15158332
+            TITLE="❌ CloudPulse Deploy Failed"
+            STATUS_AWS="${AWS_RESULT^}"
+            STATUS_ORACLE="${ORACLE_RESULT^}"
+          fi
+
+          curl -s -X POST "$DISCORD_WEBHOOK" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"embeds\": [{
+                \"title\": \"$TITLE\",
+                \"color\": $COLOR,
+                \"fields\": [
+                  {\"name\": \"🟠 AWS EC2\", \"value\": \"$STATUS_AWS\", \"inline\": true},
+                  {\"name\": \"🔴 Oracle Cloud\", \"value\": \"$STATUS_ORACLE\", \"inline\": true},
+                  {\"name\": \"👤 Pushed by\", \"value\": \"$ACTOR\", \"inline\": true},
+                  {\"name\": \"📝 Commit\", \"value\": \"$COMMIT_MSG\"}
+                ],
+                \"url\": \"$RUN_URL\"
+              }]
+            }"

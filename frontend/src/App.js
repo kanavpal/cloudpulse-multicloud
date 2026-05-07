@@ -107,6 +107,7 @@ function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [lbAlgorithm] = useState("Round Robin");
   const [trafficHistory, setTrafficHistory] = useState([]);
+  const [toasts, setToasts] = useState([]);
 
   const pollCountRef = useRef(0);
   const rrIndexRef = useRef(0); // round-robin index
@@ -117,10 +118,27 @@ function App() {
   const awsFirstSeen = useRef(null);
   const oracleFirstSeen = useRef(null);
 
+  // SLA tracking refs
+  const awsTotalPolls = useRef(0);
+  const awsSuccessPolls = useRef(0);
+  const oracleTotalPolls = useRef(0);
+  const oracleSuccessPolls = useRef(0);
+
+  // Previous status refs for change detection
+  const prevAwsUp = useRef(null);
+  const prevOracleUp = useRef(null);
+
   // ── Clock ──
   useEffect(() => {
     const tick = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(tick);
+  }, []);
+
+  // ── Toast notifications ──
+  const addToast = useCallback((msg, type = "info") => {
+    const id = Date.now() + Math.random();
+    setToasts((prev) => [...prev.slice(-4), { id, msg, type }]);
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 5000);
   }, []);
 
   // ── Fetch with timeout ──
@@ -214,6 +232,24 @@ function App() {
       );
     }
 
+    // ── SLA tracking ──
+    awsTotalPolls.current += 1;
+    if (awsUp) awsSuccessPolls.current += 1;
+    oracleTotalPolls.current += 1;
+    if (oracleUp) oracleSuccessPolls.current += 1;
+
+    // ── Toast alerts on status change ──
+    if (prevAwsUp.current !== null && prevAwsUp.current !== awsUp) {
+      if (awsUp) addToast("✅ AWS EC2 is back ONLINE", "success");
+      else addToast("🔴 AWS EC2 went OFFLINE!", "error");
+    }
+    if (prevOracleUp.current !== null && prevOracleUp.current !== oracleUp) {
+      if (oracleUp) addToast("✅ Oracle Cloud is back ONLINE", "success");
+      else addToast("🔴 Oracle Cloud went OFFLINE!", "error");
+    }
+    prevAwsUp.current = awsUp;
+    prevOracleUp.current = oracleUp;
+
     // ── Track latency history for live timeline chart ──
     const _awsLastMs = awsResponseTimes.current.length > 0
       ? awsResponseTimes.current[awsResponseTimes.current.length - 1]
@@ -229,7 +265,7 @@ function App() {
         oracleMs: oracleUp ? _oracleLastMs : null,
       },
     ]);
-  }, [fetchJSON]);
+  }, [fetchJSON, addToast]);
 
   useEffect(() => {
     pollAll();
@@ -252,6 +288,15 @@ function App() {
   const oracleAvgMs = avgMs(oracleResponseTimes.current);
   const awsUptimeSec = uptimeSec(awsFirstSeen.current);
   const oracleUptimeSec = uptimeSec(oracleFirstSeen.current);
+
+  // ── SLA computed ──
+  const awsSLA = awsTotalPolls.current > 0
+    ? ((awsSuccessPolls.current / awsTotalPolls.current) * 100).toFixed(2)
+    : null;
+  const oracleSLA = oracleTotalPolls.current > 0
+    ? ((oracleSuccessPolls.current / oracleTotalPolls.current) * 100).toFixed(2)
+    : null;
+  const slaClass = (sla) => sla === null ? "" : parseFloat(sla) >= 99 ? "sla-good" : parseFloat(sla) >= 95 ? "sla-warn" : "sla-bad";
 
   // ── Chart config ──
   const chartData = {
@@ -645,6 +690,10 @@ function App() {
                     <span className="metrics-label">First Seen</span>
                     <span className="metrics-val">{awsFirstSeen.current ? formatTimeShort(awsFirstSeen.current.toISOString()) : "—"}</span>
                   </div>
+                  <div className="metrics-row">
+                    <span className="metrics-label">SLA (session)</span>
+                    <span className={`metrics-val ${slaClass(awsSLA)}`}>{awsSLA !== null ? `${awsSLA}%` : "—"}</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -674,6 +723,10 @@ function App() {
                   <div className="metrics-row">
                     <span className="metrics-label">First Seen</span>
                     <span className="metrics-val">{oracleFirstSeen.current ? formatTimeShort(oracleFirstSeen.current.toISOString()) : "—"}</span>
+                  </div>
+                  <div className="metrics-row">
+                    <span className="metrics-label">SLA (session)</span>
+                    <span className={`metrics-val ${slaClass(oracleSLA)}`}>{oracleSLA !== null ? `${oracleSLA}%` : "—"}</span>
                   </div>
                 </div>
               </div>
@@ -787,6 +840,16 @@ function App() {
             </div>
           </div>
         </main>
+      </div>
+
+      {/* ═══════ TOAST NOTIFICATIONS ═══════ */}
+      <div className="toast-container">
+        {toasts.map((t) => (
+          <div key={t.id} className={`toast toast-${t.type}`}>
+            <span className="toast-msg">{t.msg}</span>
+            <button className="toast-close" onClick={() => setToasts((p) => p.filter((x) => x.id !== t.id))}>×</button>
+          </div>
+        ))}
       </div>
     </div>
   );

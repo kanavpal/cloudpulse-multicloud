@@ -898,3 +898,85 @@
 }
 .doughnut-legend-dot.aws    { background: #ff9830; }
 .doughnut-legend-dot.oracle { background: #f2495c; }
+
+/* ================================================================
+   TOAST NOTIFICATIONS
+   ================================================================ */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(120%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes toast-out {
+  from { opacity: 1; transform: translateX(0); }
+  to   { opacity: 0; transform: translateX(120%); }
+}
+
+.toast-container {
+  position: fixed;
+  top: 72px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  min-width: 280px;
+  max-width: 380px;
+  font-size: 13px;
+  font-weight: 500;
+  backdrop-filter: blur(12px);
+  border: 1px solid;
+  animation: toast-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  pointer-events: all;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+
+.toast-success {
+  background: rgba(115, 191, 105, 0.15);
+  border-color: rgba(115, 191, 105, 0.4);
+  color: #73bf69;
+}
+
+.toast-error {
+  background: rgba(242, 73, 92, 0.15);
+  border-color: rgba(242, 73, 92, 0.4);
+  color: #f2495c;
+}
+
+.toast-info {
+  background: rgba(50, 116, 217, 0.15);
+  border-color: rgba(50, 116, 217, 0.4);
+  color: #5b9cf5;
+}
+
+.toast-msg { flex: 1; line-height: 1.4; }
+
+.toast-close {
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.6;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 2px;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+.toast-close:hover { opacity: 1; }
+
+/* ================================================================
+   SLA VALUE COLORS
+   ================================================================ */
+.sla-good { color: #73bf69 !important; }
+.sla-warn { color: #f4b942 !important; }
+.sla-bad  { color: #f2495c !important; }
