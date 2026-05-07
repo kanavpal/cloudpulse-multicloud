@@ -6,8 +6,9 @@ on:
   workflow_dispatch:      # allow manual trigger from GitHub UI
 
 env:
-  BACKEND_PATH: /home/ubuntu/Major_2/backend   # adjust if different on your servers
-  PYTHON: python3
+  BACKEND_PATH: /home/ubuntu/backend   # Django backend lives here on both servers
+  DOCKER_CONTAINER_AWS: sweet_newton   # AWS Docker container name
+  DOCKER_CONTAINER_ORACLE: naughty_goodall  # Oracle Docker container name
 
 jobs:
   # ─────────────────────────────────────────────────────────
@@ -69,22 +70,17 @@ jobs:
           port: 22
           script: |
             set -e
-            echo "── Pulling latest code ──"
-            cd ${{ env.BACKEND_PATH }}
-            git pull origin main
-
-            echo "── Installing Python dependencies ──"
-            ${{ env.PYTHON }} -m pip install -r requirements.txt --quiet
-
-            echo "── Applying Django migrations ──"
-            ${{ env.PYTHON }} manage.py migrate --noinput
-
-            echo "── Restarting backend ──"
-            pkill -f "manage.py runserver" || true
-            sleep 1
-            nohup ${{ env.PYTHON }} manage.py runserver 0.0.0.0:8000 \
-              > /tmp/django_aws.log 2>&1 &
-            echo "✅ AWS backend restarted (PID: $!)"
+            echo "── Restarting AWS Docker container ──"
+            sudo docker restart ${{ env.DOCKER_CONTAINER_AWS }}
+            sleep 3
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health/)
+            echo "Health check status: $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ AWS backend is UP and healthy"
+            else
+              echo "❌ AWS backend health check failed (HTTP $STATUS)"
+              exit 1
+            fi
 
   # ─────────────────────────────────────────────────────────
   # JOB 3 — Deploy backend to Oracle Cloud
@@ -104,19 +100,14 @@ jobs:
           port: 22
           script: |
             set -e
-            echo "── Pulling latest code ──"
-            cd ${{ env.BACKEND_PATH }}
-            git pull origin main
-
-            echo "── Installing Python dependencies ──"
-            ${{ env.PYTHON }} -m pip install -r requirements.txt --quiet
-
-            echo "── Applying Django migrations ──"
-            ${{ env.PYTHON }} manage.py migrate --noinput
-
-            echo "── Restarting backend ──"
-            pkill -f "manage.py runserver" || true
-            sleep 1
-            nohup ${{ env.PYTHON }} manage.py runserver 0.0.0.0:8000 \
-              > /tmp/django_oracle.log 2>&1 &
-            echo "✅ Oracle backend restarted (PID: $!)"
+            echo "── Restarting Oracle Docker container ──"
+            sudo docker restart ${{ env.DOCKER_CONTAINER_ORACLE }}
+            sleep 3
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8000/health/)
+            echo "Health check status: $STATUS"
+            if [ "$STATUS" = "200" ]; then
+              echo "✅ Oracle backend is UP and healthy"
+            else
+              echo "❌ Oracle backend health check failed (HTTP $STATUS)"
+              exit 1
+            fi
