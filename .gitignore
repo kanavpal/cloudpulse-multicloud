@@ -1,0 +1,44 @@
+# === SSH Keys (NEVER commit these) ===
+*.pem
+*.key
+major2-key_aws.pem
+ssh-key-2026-02-01_2.key
+
+# === Python / Django ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+db.sqlite3
+*.log
+local_settings.py
+.env
+
+# === Node / React ===
+node_modules/
+/frontend/build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# === Environment variables ===
+.env
+.env.local
+.env.*.local
+
+# === IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# === OS ===
+.DS_Store
+Thumbs.db
