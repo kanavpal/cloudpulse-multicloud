@@ -4,70 +4,115 @@
 
 ---
 
-## 🚀 HOW TO START THE PROJECT (Quick Reference)
+## 📌 WHEN TO DO WHAT — Decision Guide
 
-### Step 1 — Start the Cloud Backends
+| Situation | What to do |
+|---|---|
+| **Normal daily start** | Start cloud servers → start frontend |
+| **You changed code** | git push → pipeline auto-restarts cloud servers → start frontend |
+| **Cloud servers stopped** (no code change) | SSH restart OR trigger pipeline manually |
+| **Server rebooted by itself** | Nothing — `restart=always` brings containers back automatically |
+| **Frontend stopped** | Just run `npm start` again |
 
-Open **PowerShell** in the project root folder (`Major_2/`) and run:
+---
 
+## 🚀 SCENARIO 1 — Normal Daily Start (No code changes)
+
+> Use this when you just want to open the dashboard to monitor your servers.
+
+Open **PowerShell** inside the project root folder `Major_2\` and run these commands **one by one**:
+
+### ▶ Start AWS EC2 backend
 ```powershell
-# Start AWS EC2 container
 ssh -i "major2-key_aws.pem" -o StrictHostKeyChecking=no ubuntu@52.206.184.80 "sudo docker start sweet_newton"
+```
+Expected output: `sweet_newton`
 
-# Start Oracle Cloud container
+### ▶ Start Oracle Cloud backend
+```powershell
 ssh -i "ssh-key-2026-02-01_2.key" -o StrictHostKeyChecking=no ubuntu@152.67.188.94 "sudo docker start naughty_goodall"
 ```
+Expected output: `naughty_goodall`
 
-> ✅ Both containers now have **restart=always** — they auto-start if the server reboots. You only need this once per manual stop.
-
-### Step 2 — Verify Cloud Backends Are Up
-
+### ▶ Verify both are healthy
 ```powershell
-# Test AWS
 Invoke-WebRequest "http://52.206.184.80:8000/health/" -UseBasicParsing | Select-Object -ExpandProperty Content
-
-# Test Oracle
 Invoke-WebRequest "http://152.67.188.94:8000/health/" -UseBasicParsing | Select-Object -ExpandProperty Content
 ```
-
 Expected output for both: `{"status": "UP"}`
 
-### Step 3 — Start the Frontend Dashboard
+### ▶ Start the dashboard
+```powershell
+cd frontend
+npm start
+```
+Dashboard opens at → **http://localhost:3000**
 
+---
+
+## 🔁 SCENARIO 2 — You Changed Code (Push + Auto-Deploy)
+
+> Use this when you edited any file and want to deploy changes to cloud servers.
+
+```powershell
+# Run from inside Major_2\ folder
+$git = "C:\Program Files\Git\bin\git.exe"
+& $git add .
+& $git commit -m "describe what you changed"
+& $git push origin main
+```
+
+**That's it.** The CI/CD pipeline will automatically:
+1. ✅ Test and build the React frontend
+2. ✅ SSH into AWS → restart Docker container → health check
+3. ✅ SSH into Oracle → restart Docker container → health check
+4. ✅ Send Discord notification (if webhook configured)
+
+Monitor the pipeline live → https://github.com/kanavpal/cloudpulse-multicloud/actions
+
+Then start the frontend locally:
 ```powershell
 cd frontend
 npm start
 ```
 
-> ✅ Dashboard opens automatically at **http://localhost:3000**
+---
+
+## 🔘 SCENARIO 3 — Restart Cloud Servers Without Changing Code
+
+> Use this when containers stopped but you have no code to push.
+
+**Option A — Trigger pipeline manually from GitHub (recommended):**
+1. Go to → https://github.com/kanavpal/cloudpulse-multicloud/actions
+2. Click **"🚀 CloudPulse CI/CD Pipeline"** in the left sidebar
+3. Click the **"Run workflow"** button (top right)
+4. Click green **"Run workflow"** → pipeline restarts both servers
+
+**Option B — SSH restart manually:**
+```powershell
+# Restart AWS
+ssh -i "major2-key_aws.pem" -o StrictHostKeyChecking=no ubuntu@52.206.184.80 "sudo docker restart sweet_newton"
+
+# Restart Oracle
+ssh -i "ssh-key-2026-02-01_2.key" -o StrictHostKeyChecking=no ubuntu@152.67.188.94 "sudo docker restart naughty_goodall"
+```
 
 ---
 
 ## 🛑 HOW TO STOP EVERYTHING
 
 ```powershell
-# Stop frontend: press Ctrl+C in the terminal
+# Stop frontend: press Ctrl+C in its terminal window
 
 # Stop AWS container
-ssh -i "major2-key_aws.pem" ubuntu@52.206.184.80 "sudo docker stop sweet_newton"
+ssh -i "major2-key_aws.pem" -o StrictHostKeyChecking=no ubuntu@52.206.184.80 "sudo docker stop sweet_newton"
 
 # Stop Oracle container
-ssh -i "ssh-key-2026-02-01_2.key" ubuntu@152.67.188.94 "sudo docker stop naughty_goodall"
+ssh -i "ssh-key-2026-02-01_2.key" -o StrictHostKeyChecking=no ubuntu@152.67.188.94 "sudo docker stop naughty_goodall"
 ```
 
 ---
 
-## 🔁 CI/CD — Auto Deploy on Code Push
-
-Every time you push code to GitHub, the pipeline auto-deploys to both servers:
-
-```powershell
-# Make your changes, then:
-$git = "C:\Program Files\Git\bin\git.exe"
-& $git add .
-& $git commit -m "your message here"
-& $git push origin main
-```
 
 > ✅ GitHub Actions will: test → build frontend → restart AWS container → restart Oracle container
 
