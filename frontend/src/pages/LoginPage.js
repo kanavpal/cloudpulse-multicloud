@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
+import { apiFetch } from "../api/apiService";
 import "./AuthPage.css";
-
-const AWS_BASE = "http://52.206.184.80:8000";
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -17,7 +16,7 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch(`${AWS_BASE}/api/auth/login/`, {
+      const res = await apiFetch("/api/auth/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),

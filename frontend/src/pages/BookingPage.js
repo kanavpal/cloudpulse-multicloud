@@ -3,8 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import "./BookingPage.css";
 
-const AWS_BASE = "http://52.206.184.80:8000";
-
 export default function BookingPage() {
   const { id } = useParams();
   const { authFetch } = useAuth();
@@ -17,7 +15,7 @@ export default function BookingPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    authFetch(`${AWS_BASE}/api/rooms/${id}/`)
+    authFetch(`/api/rooms/${id}/`)
       .then((r) => r.json())
       .then(setRoom)
       .catch(() => navigate("/rooms"));
@@ -37,7 +35,7 @@ export default function BookingPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await authFetch(`${AWS_BASE}/api/bookings/`, {
+      const res = await authFetch(`/api/bookings/`, {
         method: "POST",
         body: JSON.stringify({ room: parseInt(id), ...form, guests: parseInt(form.guests) }),
       });

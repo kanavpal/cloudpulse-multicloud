@@ -2,8 +2,6 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../auth/authContext";
 import "./MyBookingsPage.css";
 
-const AWS_BASE = "http://52.206.184.80:8000";
-
 const STATUS_COLORS = { confirmed: "#22c55e", cancelled: "#ef4444" };
 
 export default function MyBookingsPage() {
@@ -12,7 +10,7 @@ export default function MyBookingsPage() {
   const [loading, setLoading] = useState(true);
 
   const fetchBookings = useCallback(() => {
-    authFetch(`${AWS_BASE}/api/bookings/`)
+    authFetch(`/api/bookings/`)
       .then((r) => r.json())
       .then((data) => { setBookings(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => setLoading(false));
@@ -22,7 +20,7 @@ export default function MyBookingsPage() {
 
   const handleCancel = async (id) => {
     if (!window.confirm("Cancel this booking?")) return;
-    await authFetch(`${AWS_BASE}/api/bookings/${id}/cancel/`, { method: "POST" });
+    await authFetch(`/api/bookings/${id}/cancel/`, { method: "POST" });
     fetchBookings();
   };
 

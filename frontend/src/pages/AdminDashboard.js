@@ -1,10 +1,8 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/authContext";
 import MonitoringDashboard from "./MonitoringDashboard";
 import "./AdminDashboard.css";
-
-const AWS_BASE = "http://52.206.184.80:8000";
 
 export default function AdminDashboard() {
   const { authFetch, logout, user } = useAuth();
@@ -17,8 +15,8 @@ export default function AdminDashboard() {
   const fetchStats = useCallback(async () => {
     try {
       const [sRes, bRes] = await Promise.all([
-        authFetch(`${AWS_BASE}/api/admin/bookings/stats/`),
-        authFetch(`${AWS_BASE}/api/admin/bookings/`),
+        authFetch(`/api/admin/bookings/stats/`),
+        authFetch(`/api/admin/bookings/`),
       ]);
       const [s, b] = await Promise.all([sRes.json(), bRes.json()]);
       setStats(s);

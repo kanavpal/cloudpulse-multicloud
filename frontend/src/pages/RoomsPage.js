@@ -3,8 +3,6 @@ import { useAuth } from "../auth/authContext";
 import RoomCard from "../components/RoomCard";
 import "./RoomsPage.css";
 
-const AWS_BASE = "http://52.206.184.80:8000";
-
 export default function RoomsPage() {
   const { authFetch } = useAuth();
   const [rooms, setRooms] = useState([]);
@@ -13,7 +11,7 @@ export default function RoomsPage() {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    authFetch(`${AWS_BASE}/api/rooms/`)
+    authFetch(`/api/rooms/`)
       .then((r) => r.json())
       .then((data) => { setRooms(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => setLoading(false));

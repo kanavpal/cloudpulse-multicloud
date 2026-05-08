@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { apiFetch } from "../api/apiService";
 
 const AuthContext = createContext(null);
 
@@ -28,19 +29,22 @@ export function AuthProvider({ children }) {
 
   const getToken = useCallback(() => localStorage.getItem("cs_access"), []);
 
-  // Authenticated fetch helper — adds Bearer token automatically
-  const authFetch = useCallback(async (url, options = {}) => {
+  /**
+   * authFetch — wraps apiFetch with the stored JWT token.
+   * Accepts a PATH (e.g. "/api/rooms/") — NOT a full URL.
+   * Automatically fails over between AWS and Oracle.
+   */
+  const authFetch = useCallback(async (pathOrUrl, options = {}) => {
     const token = localStorage.getItem("cs_access");
-    const headers = {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    };
-    return fetch(url, { ...options, headers });
+    // Support both full URLs (legacy) and paths
+    const path = pathOrUrl.startsWith("http")
+      ? "/" + pathOrUrl.split("/").slice(3).join("/")
+      : pathOrUrl;
+    return apiFetch(path, options, token);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, getToken, authFetch }}>
+    <AuthContext.Provider value={{ user, login, logout, getToken, authFetch, apiFetch }}>
       {children}
     </AuthContext.Provider>
   );

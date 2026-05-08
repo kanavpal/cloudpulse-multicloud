@@ -1,26 +1,9 @@
 version: "3.9"
 
-services:
-  # ── Shared PostgreSQL Database (runs on AWS only) ──────────────────────────
-  postgres:
-    image: postgres:16-alpine
-    container_name: cloudstay-db
-    restart: always
-    environment:
-      POSTGRES_DB: cloudstay
-      POSTGRES_USER: cloudstay_user
-      POSTGRES_PASSWORD: cloudstay_pass
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"   # exposed so Oracle can connect remotely
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cloudstay_user -d cloudstay"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+# AWS EC2 — API only; connects to PostgreSQL hosted on Oracle Cloud
+# Oracle must have port 5432 open in its security rules
 
-  # ── Django API ─────────────────────────────────────────────────────────────
+services:
   cloudpulse-api:
     image: multicloud-django
     container_name: cloudpulse-api
@@ -31,14 +14,11 @@ services:
       - DJANGO_SETTINGS_MODULE=core.settings
       - CLOUD_NAME=AWS
       - CLOUD_REGION=us-east-1
-      - DB_HOST=postgres
+      - DB_HOST=152.67.188.94    # Oracle Cloud public IP — postgres runs there
       - DB_NAME=cloudstay
       - DB_USER=cloudstay_user
       - DB_PASSWORD=cloudstay_pass
       - DB_PORT=5432
-    depends_on:
-      postgres:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
       interval: 30s
@@ -50,6 +30,3 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-
-volumes:
-  postgres_data:
