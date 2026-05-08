@@ -1,0 +1,32 @@
+version: "3.9"
+
+# Oracle Cloud — API only; connects to PostgreSQL hosted on AWS EC2
+# AWS must have port 5432 open in its Security Group (inbound rule)
+
+services:
+  cloudpulse-api:
+    image: multicloud-django
+    container_name: cloudpulse-api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=core.settings
+      - CLOUD_NAME=Oracle
+      - CLOUD_REGION=ap-mumbai-1
+      - DB_HOST=52.206.184.80    # AWS EC2 public IP — postgres runs there
+      - DB_NAME=cloudstay
+      - DB_USER=cloudstay_user
+      - DB_PASSWORD=cloudstay_pass
+      - DB_PORT=5432
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

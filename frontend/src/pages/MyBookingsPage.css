@@ -1,0 +1,31 @@
+.mybookings-page { min-height: 100vh; background: #0a0c13; padding: 40px 24px; }
+.mybookings-inner { max-width: 900px; margin: 0 auto; }
+.mybookings-header { margin-bottom: 32px; }
+.mybookings-title { font-size: 28px; font-weight: 800; color: #e8eaf0; margin: 0 0 8px; }
+.mybookings-sub { color: #9ca3af; margin: 0; }
+.mybookings-loading { display: flex; align-items: center; gap: 12px; padding: 80px; justify-content: center; color: #6b7280; }
+.mybookings-empty { text-align: center; padding: 80px 24px; color: #6b7280; }
+.mybookings-empty-icon { font-size: 48px; margin-bottom: 16px; }
+.mybookings-empty h3 { font-size: 20px; color: #9ca3af; margin: 0 0 8px; }
+.mybookings-empty p { margin: 0; }
+
+.mybookings-list { display: flex; flex-direction: column; gap: 16px; }
+.mybooking-card { background: #1a1d27; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; display: flex; overflow: hidden; transition: border-color 0.2s; }
+.mybooking-card:hover { border-color: rgba(108,99,255,0.3); }
+.mybooking-img { width: 160px; height: 130px; object-fit: cover; flex-shrink: 0; }
+@media (max-width: 600px) { .mybooking-img { display: none; } }
+.mybooking-info { padding: 16px 20px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.mybooking-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.mybooking-name { font-size: 16px; font-weight: 700; color: #e8eaf0; margin: 0 0 4px; }
+.mybooking-type { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #a78bfa; letter-spacing: 0.5px; }
+.mybooking-status { font-size: 13px; font-weight: 600; flex-shrink: 0; }
+.mybooking-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 13px; color: #9ca3af; }
+.mybooking-cloud { font-weight: 600; }
+.mybooking-cloud.aws { color: #fb923c; }
+.mybooking-cloud.oracle { color: #f87171; }
+.mybooking-cloud.local { color: #60a5fa; }
+.mybooking-footer { display: flex; align-items: center; gap: 12px; margin-top: auto; }
+.mybooking-price { font-size: 18px; font-weight: 800; color: #6c63ff; }
+.mybooking-id { font-size: 12px; color: #6b7280; }
+.mybooking-cancel { margin-left: auto; padding: 6px 14px; border: 1px solid rgba(239,68,68,0.4); background: rgba(239,68,68,0.08); color: #fca5a5; border-radius: 8px; font-size: 13px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+.mybooking-cancel:hover { background: rgba(239,68,68,0.18); border-color: #ef4444; }

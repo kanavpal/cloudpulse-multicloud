@@ -1,0 +1,122 @@
+.room-card {
+  background: #1a1d27;
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+
+.room-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+}
+
+.room-card-img-wrap { position: relative; }
+
+.room-card-img {
+  width: 100%;
+  height: 210px;
+  object-fit: cover;
+  display: block;
+}
+
+.room-card-type-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.room-card-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.room-card-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #e8eaf0;
+  margin: 0;
+}
+
+.room-card-desc {
+  font-size: 13px;
+  color: #9ca3af;
+  line-height: 1.55;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.room-card-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.room-card-amenity {
+  background: rgba(108, 99, 255, 0.12);
+  border: 1px solid rgba(108, 99, 255, 0.25);
+  color: #a78bfa;
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 20px;
+}
+
+.room-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.room-card-capacity {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.room-card-price {
+  font-size: 22px;
+  font-weight: 800;
+  color: #6c63ff;
+}
+
+.room-card-per-night {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.room-card-book-btn {
+  display: block;
+  text-align: center;
+  margin-top: 14px;
+  padding: 11px;
+  background: linear-gradient(135deg, #6c63ff, #4f46e5);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.room-card-book-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(108, 99, 255, 0.45);
+}

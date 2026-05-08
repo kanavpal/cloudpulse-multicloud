@@ -1,0 +1,87 @@
+.auth-page {
+  min-height: 100vh;
+  background: #0a0c13;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 440px;
+  background: #1a1d27;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 40px 36px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+}
+
+.auth-logo { font-size: 36px; text-align: center; margin-bottom: 16px; }
+
+.auth-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #e8eaf0;
+  text-align: center;
+  margin: 0 0 6px;
+}
+
+.auth-sub {
+  font-size: 14px;
+  color: #9ca3af;
+  text-align: center;
+  margin: 0 0 28px;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 16px; }
+
+.auth-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.auth-field { display: flex; flex-direction: column; gap: 6px; }
+
+.auth-label { font-size: 13px; font-weight: 600; color: #9ca3af; }
+
+.auth-input {
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  color: #e8eaf0;
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+  outline: none;
+}
+.auth-input:focus { border-color: #6c63ff; background: rgba(108,99,255,0.05); }
+.auth-input::placeholder { color: #4b5563; }
+
+.auth-error {
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.3);
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.auth-submit {
+  margin-top: 4px;
+  padding: 12px;
+  background: linear-gradient(135deg, #6c63ff, #4f46e5);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(108,99,255,0.35);
+}
+.auth-submit:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 28px rgba(108,99,255,0.5); }
+.auth-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.auth-footer { text-align: center; font-size: 13px; color: #6b7280; margin: 16px 0 0; }
+.auth-link { color: #a78bfa; text-decoration: none; font-weight: 600; }
+.auth-link:hover { color: #c4b5fd; }

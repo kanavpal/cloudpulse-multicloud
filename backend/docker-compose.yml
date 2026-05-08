@@ -1,22 +1,55 @@
 version: "3.9"
 
 services:
+  # ── Shared PostgreSQL Database (runs on AWS only) ──────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: cloudstay-db
+    restart: always
+    environment:
+      POSTGRES_DB: cloudstay
+      POSTGRES_USER: cloudstay_user
+      POSTGRES_PASSWORD: cloudstay_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"   # exposed so Oracle can connect remotely
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cloudstay_user -d cloudstay"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Django API ─────────────────────────────────────────────────────────────
   cloudpulse-api:
     image: multicloud-django
     container_name: cloudpulse-api
-    restart: always          # J: auto-restart on crash or reboot
+    restart: always
     ports:
       - "8000:8000"
     environment:
       - DJANGO_SETTINGS_MODULE=core.settings
+      - CLOUD_NAME=AWS
+      - CLOUD_REGION=us-east-1
+      - DB_HOST=postgres
+      - DB_NAME=cloudstay
+      - DB_USER=cloudstay_user
+      - DB_PASSWORD=cloudstay_pass
+      - DB_PORT=5432
+    depends_on:
+      postgres:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health/"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 15s
+      start_period: 20s
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
         max-file: "3"
+
+volumes:
+  postgres_data:
