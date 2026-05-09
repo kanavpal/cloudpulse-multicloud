@@ -221,7 +221,6 @@ jobs:
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
       - name: Send Discord notification
-        if: ${{ secrets.DISCORD_WEBHOOK_URL != '' }}
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
           AWS_RESULT: ${{ needs.deploy-aws.result }}
@@ -230,6 +229,12 @@ jobs:
           COMMIT_MSG: ${{ github.event.head_commit.message }}
           ACTOR: ${{ github.actor }}
         run: |
+          # Skip gracefully if webhook not configured
+          if [ -z "$DISCORD_WEBHOOK" ]; then
+            echo "⚠️  DISCORD_WEBHOOK_URL not set — skipping Discord notification"
+            exit 0
+          fi
+
           if [ "$AWS_RESULT" = "success" ] && [ "$ORACLE_RESULT" = "success" ]; then
             COLOR=3066993
             TITLE="✅ CloudStay Deploy Succeeded"
