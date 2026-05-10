@@ -19,15 +19,11 @@ export default function LandingPage() {
       <section className="landing-hero">
         <div className="landing-hero-glow" />
         <div className="landing-hero-content">
-          <div className="landing-hero-badge">🌐 Powered by Multi-Cloud Infrastructure</div>
           <h1 className="landing-hero-title">
             Luxury Stays.<br />
             <span className="landing-hero-gradient">Always Available.</span>
           </h1>
-          <p className="landing-hero-sub">
-            CloudStay runs on AWS and Oracle Cloud simultaneously — so your booking is never lost,
-            even if one server goes offline. Experience true cloud resilience.
-          </p>
+
           <div className="landing-hero-actions">
             {user ? (
               <Link to="/rooms" className="landing-cta-primary">Browse Rooms →</Link>
@@ -38,30 +34,7 @@ export default function LandingPage() {
               </>
             )}
           </div>
-          <div className="landing-hero-stats">
-            <div className="landing-stat"><span className="landing-stat-num">2</span><span className="landing-stat-label">Cloud Providers</span></div>
-            <div className="landing-stat-div" />
-            <div className="landing-stat"><span className="landing-stat-num">99.9%</span><span className="landing-stat-label">Uptime SLA</span></div>
-            <div className="landing-stat-div" />
-            <div className="landing-stat"><span className="landing-stat-num">6</span><span className="landing-stat-label">Room Types</span></div>
-          </div>
-        </div>
-      </section>
 
-      {/* ── Cloud Indicator ── */}
-      <section className="landing-clouds">
-        <div className="landing-clouds-inner">
-          <div className="cloud-pill aws">
-            <span className="cloud-dot online" />
-            <span>AWS EC2 — us-east-1</span>
-            <span className="cloud-status">ACTIVE</span>
-          </div>
-          <div className="cloud-arrow">⟷</div>
-          <div className="cloud-pill oracle">
-            <span className="cloud-dot online" />
-            <span>Oracle Cloud — ap-mumbai-1</span>
-            <span className="cloud-status">ACTIVE</span>
-          </div>
         </div>
       </section>
 
@@ -74,7 +47,7 @@ export default function LandingPage() {
               <div key={f.title} className="landing-feature-card">
                 <div className="landing-feature-icon">{f.icon}</div>
                 <h3 className="landing-feature-title">{f.title}</h3>
-                <p className="landing-feature-desc">{f.desc}</p>
+
               </div>
             ))}
           </div>
